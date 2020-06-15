@@ -1,5 +1,6 @@
 import React from 'react';
 import * as firebase from 'firebase';
+import Cookies from 'js-cookie';
 
 class Login extends React.Component {
     constructor(props) {
@@ -9,13 +10,15 @@ class Login extends React.Component {
     }
 
     login() {
-        let id = this.refs.id.value;
-        let database = firebase.database();
+        const id = this.refs.id.value;
+        const database = firebase.database();
+        const {history} = this.props;
         database.ref('user/' + id).once('value').then((user) => {
             let userVal = user.val();
 
             if (userVal && userVal.id === id && userVal.pwd === this.refs.pwd.value) {
-                alert('로그인 성공!');
+                Cookies.set('authToken', userVal.id);
+                history.push("/");
             }else {
                 alert('로그인 실패!');
             }
