@@ -15,9 +15,9 @@ class Login extends React.Component {
             let userVal = user.val();
 
             if (userVal && userVal.id === id && userVal.pwd === this.refs.pwd.value) {
-                alert('로그인 성공');
+                alert('로그인 성공!');
             }else {
-                alert('로그인 실패');
+                alert('로그인 실패!');
             }
         });
     }
