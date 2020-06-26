@@ -13,6 +13,7 @@ class Login extends React.Component {
         const id = this.refs.id.value;
         const database = firebase.database();
         const {history} = this.props;
+
         database.ref('user/' + id).once('value').then((user) => {
             let userVal = user.val();
 
