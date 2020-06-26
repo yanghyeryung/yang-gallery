@@ -1,168 +1,37 @@
 import React from 'react';
 import * as firebase from 'firebase';
-import moment from 'moment';
+import Gallery from './Gallery';
+import GuestBook from './GuestBook';
 
 class Main extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            arts: {},
-            detail: {},
-            editMode: false,
+            activeTabMode: 'gallery',
         };
 
-        this.database = firebase.database();
-
-        this.add = this.add.bind(this);
-        this.edit = this.edit.bind(this);
-        this.delete = this.delete.bind(this);
-        this.save = this.save.bind(this);
-        this.changeDetail = this.changeDetail.bind(this);
+        this.changeMode = this.changeMode.bind(this);
     }
 
-    componentWillMount() {
-        this.database.ref('art').on('value', (arts) => {
-            let artMap = {};
-
-            arts.forEach((art) => {
-                const artVal = art.val();
-
-                artMap[art.key] = {
-                    key: art.key,
-                    title: artVal.title,
-                    image: artVal.image,
-                    desc: artVal.desc,
-                    date: artVal.date,
-                };
-            });
-
-            this.setState({
-                arts: artMap,
-            });
-        });
-    }
-
-    componentWillUnmount() {
-        this.database.ref('art').off('value');
-    }
-
-    add() {
-        this.setState({
-            editMode: true,
-            detail: {},
-        });
-    }
-
-    edit(e) {
-        let key = e.currentTarget.getAttribute('data-key');
+    changeMode(e) {
+        let mode = e.currentTarget.getAttribute('data-mode');
 
         this.setState({
-            editMode: true,
-            detail: Object.assign({}, this.state.arts[key]),
-        });
-    }
-
-    delete(e) {
-        let key = e.currentTarget.getAttribute('data-key');
-
-        this.database.ref('art/' + key).remove()
-            .then(() => {
-                alert('삭제 성공');
-            })
-            .catch(() => {
-                alert('삭제 실패');
-            });
-    }
-
-    save(e) {
-        e.preventDefault();
-
-        let detail = Object.assign({date: moment().format('YYYY/MM/DD')}, this.state.detail);
-
-        if (detail.key) {
-            // 수정
-            this.database.ref('art/' + detail.key).set(detail)
-                .then(() => {
-                    alert('수정 성공');
-                    this.setState({
-                        editMode: false,
-                    });
-                })
-                .catch(() => {
-                    alert('수정 실패');
-                });
-        } else {
-            // 추가
-            detail.key = this.state.detail.title + '-' + moment().format('YYYYMMDDhhmmss');
-
-            let arts = Object.assign({[detail.key]: detail}, this.state.arts);
-            this.database.ref('art').set(arts)
-                .then(() => {
-                    alert('추가 성공');
-                    this.setState({
-                        editMode: false,
-                    });
-                })
-                .catch(() => {
-                    alert('추가 실패');
-                });
-        }
-    }
-
-    changeDetail(e) {
-        this.setState({
-            detail: Object.assign({}, this.state.detail, {[e.target.name]: e.target.value}),
+            activeTabMode: mode,
         });
     }
 
     render() {
-        let artHtmlList = [];
-
-        for (let key in this.state.arts) {
-            if (this.state.arts.hasOwnProperty(key)) {
-                let art = this.state.arts[key];
-
-                artHtmlList.push(<li>
-                    <div className="title">{art.title}</div>
-                    <div className="image">{art.image}</div>
-                    <div className="desc">{art.desc}</div>
-                    <div className="date">{art.date}</div>
-                    <button onClick={this.edit} data-key={key}>edit</button>
-                    <button onClick={this.delete} data-key={key}>delete</button>
-                </li>);
-            }
-        }
         return (
-            <div className="list-view">
+            <div className="main-view">
                 <div className="header">
                     <span className="title">YangGallery</span>
-                    <div className="button-wrap">
-                        {!this.state.editMode && <button className="btn" onClick={this.add}>+</button>}
-                    </div>
                 </div>
-                {
-                    this.state.editMode ?
-                        <form>
-                            <div className="form-item">
-                                <label>title</label>
-                                <input name="title" value={this.state.detail.title} onChange={this.changeDetail}/>
-                            </div>
-                            <div className="form-item">
-                                <label>image</label>
-                                <input name="image" value={this.state.detail.image} onChange={this.changeDetail}/>
-                            </div>
-                            <div className="form-item">
-                                <label>desc</label>
-                                <input name="desc" value={this.state.detail.desc} onChange={this.changeDetail}/>
-                            </div>
-                            <button onClick={this.save}>save</button>
-                        </form>
-                        :
-                        <ul>
-                        {artHtmlList}
-                    </ul>
-                }
+                <button onClick={this.changeMode} data-mode="gallery">Gallery</button>
+                <button onClick={this.changeMode} data-mode="guestbook">GuestBook</button>
+                {this.state.activeTabMode === 'gallery' && <Gallery />}
+                {this.state.activeTabMode === 'guestbook' && <GuestBook />}
             </div>
         );
     }
