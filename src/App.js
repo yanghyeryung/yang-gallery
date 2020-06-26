@@ -11,8 +11,8 @@ function App() {
         <Router>
             <Switch>
                 <Route exact path='/login' component={Login} />
-                <Route render={() => (
-                    Cookies.get('authToken') ? <Main /> : <Redirect to='/login'/>
+                <Route render={(props) => (
+                    Cookies.get('authToken') ? <Main {...props}/> : <Redirect to='/login'/>
                 )}/>
             </Switch>
         </Router>

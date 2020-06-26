@@ -1,6 +1,7 @@
 import React from 'react';
 import * as firebase from 'firebase';
 import moment from 'moment';
+
 import Art from './Art';
 
 class Gallery extends React.Component {

@@ -19,7 +19,7 @@ class Login extends React.Component {
 
             if (userVal && userVal.id === id && userVal.pwd === this.refs.pwd.value) {
                 Cookies.set('authToken', userVal.id);
-                history.push("/");
+                history.push('/');
             }else {
                 alert('로그인 실패!');
             }
