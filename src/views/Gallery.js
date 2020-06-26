@@ -1,6 +1,7 @@
 import React from 'react';
 import * as firebase from 'firebase';
 import moment from 'moment';
+import Art from './Art';
 
 class Gallery extends React.Component {
     constructor(props) {
@@ -97,6 +98,7 @@ class Gallery extends React.Component {
             detail.key = this.state.detail.title + '-' + moment().format('YYYYMMDDhhmmss');
 
             let arts = Object.assign({[detail.key]: detail}, this.state.arts);
+
             this.database.ref('art').set(arts)
                 .then(() => {
                     alert('추가 성공');
@@ -122,15 +124,7 @@ class Gallery extends React.Component {
         for (let key in this.state.arts) {
             if (this.state.arts.hasOwnProperty(key)) {
                 let art = this.state.arts[key];
-
-                artHtmlList.push(<li>
-                    <div className="title">{art.title}</div>
-                    <div className="image">{art.image}</div>
-                    <div className="desc">{art.desc}</div>
-                    <div className="date">{art.date}</div>
-                    <button onClick={this.edit} data-key={key}>edit</button>
-                    <button onClick={this.delete} data-key={key}>delete</button>
-                </li>);
+                artHtmlList.push(<Art art={art} editFn={this.edit} deleteFn={this.delete}/>);
             }
         }
         return (
@@ -154,9 +148,9 @@ class Gallery extends React.Component {
                             <button onClick={this.save}>save</button>
                         </form>
                         :
-                        <ul>
-                        {artHtmlList}
-                    </ul>
+                        <div>
+                            {artHtmlList}
+                        </div>
                 }
             </div>
         );
