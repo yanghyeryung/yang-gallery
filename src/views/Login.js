@@ -28,7 +28,7 @@ class Login extends React.Component {
 
     render() {
         return (
-            <div className="login-view">
+            <div className="login-wrap">
                 <input ref="id" placeholder="id" type="text"/>
                 <input ref="pwd" placeholder="pwd" type="password"/>
                 <button onClick={this.login}>login</button>

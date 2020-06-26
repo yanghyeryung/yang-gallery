@@ -1,7 +1,7 @@
 import React from 'react';
-import * as firebase from 'firebase';
 import Gallery from './Gallery';
 import GuestBook from './GuestBook';
+import Artist from './Artist';
 
 class Main extends React.Component {
     constructor(props) {
@@ -24,14 +24,16 @@ class Main extends React.Component {
 
     render() {
         return (
-            <div className="main-view">
+            <div className="main-wrap">
                 <div className="header">
                     <span className="title">YangGallery</span>
                 </div>
                 <button onClick={this.changeMode} data-mode="gallery">Gallery</button>
                 <button onClick={this.changeMode} data-mode="guestbook">GuestBook</button>
+                <button onClick={this.changeMode} data-mode="artist">Artist</button>
                 {this.state.activeTabMode === 'gallery' && <Gallery />}
                 {this.state.activeTabMode === 'guestbook' && <GuestBook />}
+                {this.state.activeTabMode === 'artist' && <Artist />}
             </div>
         );
     }
