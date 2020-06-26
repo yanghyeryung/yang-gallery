@@ -1,5 +1,5 @@
 import React from 'react';
-import * as firebase from 'firebase';
+import PropTypes from 'prop-types';
 
 class Art extends React.Component {
     constructor(props) {
@@ -7,7 +7,7 @@ class Art extends React.Component {
     }
 
     render() {
-        const art = this.props.art;
+        const {art, editFn, deleteFn} = this.props;
 
         return (
             <div className="art-view">
@@ -15,11 +15,22 @@ class Art extends React.Component {
                 <div className="image">{art.image}</div>
                 <div className="desc">{art.desc}</div>
                 <div className="date">{art.date}</div>
-                <button onClick={this.props.editFn} data-key={art.key}>edit</button>
-                <button onClick={this.props.deleteFn} data-key={art.key}>delete</button>
+                <button onClick={editFn} data-key={art.key}>edit</button>
+                <button onClick={deleteFn} data-key={art.key}>delete</button>
             </div>
         );
     }
 }
+
+Art.propTypes = {
+    art: PropTypes.shape({
+        title: PropTypes.string.isRequired,
+        image: PropTypes.string.isRequired,
+        desc: PropTypes.string,
+        date: PropTypes.string.isRequired,
+    }),
+    editFn: PropTypes.func.isRequired,
+    deleteFn: PropTypes.func.isRequired,
+};
 
 export default Art;
