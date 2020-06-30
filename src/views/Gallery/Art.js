@@ -14,8 +14,8 @@ class Art extends React.Component {
                 <img src={art.image} width="300"></img>
                 <div className="desc">{art.desc}</div>
                 <div className="date">{art.date}</div>
-                <button onClick={editFn} data-key={art.key}>edit</button>
-                <button onClick={deleteFn} data-key={art.key}>delete</button>
+                <button onClick={editFn} data-key={art.key}>수정!</button>
+                <button onClick={deleteFn} data-key={art.key}>삭제</button>
             </div>
         );
     }
