@@ -120,32 +120,34 @@ class GuestBook extends React.Component {
     }
 
     render() {
+        const {detail, editMode, articles} = this.state;
+
         let articleHtmlList = [];
 
-        for (let key in this.state.articles) {
-            if (this.state.articles.hasOwnProperty(key)) {
-                let article = this.state.articles[key];
+        for (let key in articles) {
+            if (articles.hasOwnProperty(key)) {
+                let article = articles[key];
                 articleHtmlList.push(<Article article={article} editFn={this.edit} deleteFn={this.delete}/>);
             }
         }
 
         return (
             <div className="guest-book-wrap">
-                {!this.state.editMode && <button className="btn" onClick={this.add}>+</button>}
+                {!editMode && <button className="btn" onClick={this.add}>+</button>}
                 {
-                    this.state.editMode ?
+                    editMode ?
                         <form>
                             <div className="form-item">
                                 <label>title</label>
-                                <input name="title" value={this.state.detail.title} onChange={this.changeDetail}/>
+                                <input name="title" value={detail.title} onChange={this.changeDetail}/>
                             </div>
                             <div className="form-item">
                                 <label>name</label>
-                                <input name="name" value={this.state.detail.name} onChange={this.changeDetail}/>
+                                <input name="name" value={detail.name} onChange={this.changeDetail}/>
                             </div>
                             <div className="form-item">
                                 <label>desc</label>
-                                <input name="desc" value={this.state.detail.desc} onChange={this.changeDetail}/>
+                                <input name="desc" value={detail.desc} onChange={this.changeDetail}/>
                             </div>
                             <button onClick={this.save}>save</button>
                         </form>
