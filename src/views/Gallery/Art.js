@@ -8,11 +8,10 @@ class Art extends React.Component {
 
     render() {
         const {art, editFn, deleteFn} = this.props;
-
         return (
             <div className="art-wrap">
                 <div className="title">{art.title}</div>
-                <div className="image">{art.image}</div>
+                <img src={art.image} width="300"></img>
                 <div className="desc">{art.desc}</div>
                 <div className="date">{art.date}</div>
                 <button onClick={editFn} data-key={art.key}>edit</button>

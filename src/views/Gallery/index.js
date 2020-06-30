@@ -1,6 +1,7 @@
 import React from 'react';
 import * as firebase from 'firebase';
 import moment from 'moment';
+import $ from 'jquery';
 
 import Art from './Art';
 
@@ -15,12 +16,15 @@ class Gallery extends React.Component {
         };
 
         this.database = firebase.database();
+        this.storage = firebase.storage().ref();
 
         this.add = this.add.bind(this);
         this.edit = this.edit.bind(this);
         this.delete = this.delete.bind(this);
         this.save = this.save.bind(this);
         this.changeDetail = this.changeDetail.bind(this);
+        this.openUploadImagePopup = this.openUploadImagePopup.bind(this);
+        this.uploadImage = this.uploadImage.bind(this);
     }
 
     componentWillMount() {
@@ -119,33 +123,65 @@ class Gallery extends React.Component {
         });
     }
 
+    openUploadImagePopup(e) {
+        e.preventDefault();
+        $(e.currentTarget).siblings('input').click();
+    }
+
+    uploadImage(e) {
+        const selectedFile = e.target.files[0];
+        const fileName = selectedFile.name;
+
+        this.storage.child(`images/${fileName}`).put(selectedFile)
+            .then((snapshot) => {
+                alert('이미지 추가 성공');
+
+                snapshot.ref.getDownloadURL().then((downloadURL) => {
+                    let detail = Object.assign({}, this.state.detail, {image: downloadURL});
+                    this.setState({
+                        detail: detail,
+                    });
+                });
+            })
+            .catch(() => {
+                alert('이미지 추가 실패');
+            });
+    }
+
     render() {
+        const {detail, editMode, arts} = this.state;
+        const hideStyle = {display: 'none'};
+
         let artHtmlList = [];
 
-        for (let key in this.state.arts) {
-            if (this.state.arts.hasOwnProperty(key)) {
-                let art = this.state.arts[key];
-                artHtmlList.push(<Art art={art} editFn={this.edit} deleteFn={this.delete}/>);
+        for (let key in arts) {
+            if (arts.hasOwnProperty(key)) {
+                let art = arts[key];
+                artHtmlList.push(<Art key={key} art={art} editFn={this.edit} deleteFn={this.delete}/>);
             }
         }
 
         return (
             <div className="gallery-wrap">
-                {!this.state.editMode && <button className="btn" onClick={this.add}>+</button>}
+                {!editMode && <button className="btn" onClick={this.add}>+</button>}
                 {
-                    this.state.editMode ?
+                    editMode ?
                         <form>
                             <div className="form-item">
                                 <label>title</label>
-                                <input name="title" value={this.state.detail.title} onChange={this.changeDetail}/>
+                                <input name="title" value={detail.title} onChange={this.changeDetail}/>
                             </div>
                             <div className="form-item">
                                 <label>image</label>
-                                <input name="image" value={this.state.detail.image} onChange={this.changeDetail}/>
+                                <input type="file" accept="image/*" name="image" onChange={this.uploadImage} style={hideStyle} />
+                                <button onClick={this.openUploadImagePopup}>upload</button>
+                                {
+                                    this.state.detail.image && <img src={detail.image} width="300"></img>
+                                }
                             </div>
                             <div className="form-item">
                                 <label>desc</label>
-                                <input name="desc" value={this.state.detail.desc} onChange={this.changeDetail}/>
+                                <input name="desc" value={detail.desc} onChange={this.changeDetail}/>
                             </div>
                             <button onClick={this.save}>save</button>
                         </form>
