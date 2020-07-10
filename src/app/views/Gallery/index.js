@@ -2,6 +2,7 @@ import React from 'react';
 import * as firebase from 'firebase';
 import moment from 'moment';
 import $ from 'jquery';
+import { v4 as uuid } from 'uuid';
 
 import Art from './Art';
 
@@ -100,7 +101,7 @@ class Gallery extends React.Component {
                 });
         } else {
             // 추가
-            detail.key = this.state.detail.title + '-' + moment().format('YYYYMMDDhhmmss');
+            detail.key = uuid();
 
             let arts = Object.assign({[detail.key]: detail}, this.state.arts);
 
@@ -115,6 +116,12 @@ class Gallery extends React.Component {
                     alert('추가 실패');
                 });
         }
+    }
+
+    detail (e) {
+        let key = e.currentTarget.getAttribute('data-key');
+
+        this.state.arts[key];
     }
 
     changeDetail(e) {
@@ -152,18 +159,27 @@ class Gallery extends React.Component {
         const {detail, editMode, arts} = this.state;
         const hideStyle = {display: 'none'};
 
-        let artHtmlList = [];
+        let artHtmlList = {
+            0: [],
+            1: [],
+            2: [],
+        };
 
+        let artKey = 0;
+        
         for (let key in arts) {
             if (arts.hasOwnProperty(key)) {
                 let art = arts[key];
-                artHtmlList.push(<Art key={key} art={art} editFn={this.edit} deleteFn={this.delete}/>);
+
+                artHtmlList[artKey].push(<Art key={key} art={art} editFn={this.edit} deleteFn={this.delete}/>);
+                artKey ++;
+                (artKey === 3) && (artKey = 0);
             }
         }
 
         return (
             <div className="gallery-wrap">
-                {!editMode && <button className="btn" onClick={this.add}>+</button>}
+                {/*!editMode && <button className="btn" onClick={this.add}>+</button>*/}
                 {
                     editMode ?
                         <form>
@@ -186,8 +202,13 @@ class Gallery extends React.Component {
                             <button onClick={this.save}>save</button>
                         </form>
                         :
-                        <div>
-                            {artHtmlList}
+                        <div className="art-list-wrap">
+                            <div>{artHtmlList[0]}</div>
+                            <div>{artHtmlList[1]}</div>
+                            <div>{artHtmlList[2]}</div>
+                            <div className="art-detail-wrap">
+
+                            </div>
                         </div>
                 }
             </div>

@@ -7,15 +7,15 @@ class Art extends React.Component {
     }
 
     render() {
-        const {art, editFn, deleteFn} = this.props;
+        const {art, editFn, deleteFn, detailFn} = this.props;
         return (
-            <div className="art-wrap">
-                <div className="title">{art.title}</div>
+            <div className="art-wrap" onClick={detailFn} data-key={art.key}>
                 <img src={art.image} width="300"></img>
-                <div className="desc">{art.desc}</div>
-                <div className="date">{art.date}</div>
-                <button onClick={editFn} data-key={art.key}>수정!</button>
-                <button onClick={deleteFn} data-key={art.key}>삭제</button>
+                <div className="title">{art.title}</div>
+                { /* <div className="desc">{art.desc}</div>
+                    <button onClick={editFn} data-key={art.key}>수정!</button>
+                    <button onClick={deleteFn} data-key={art.key}>삭제</button>
+                */ }
             </div>
         );
     }
@@ -30,6 +30,7 @@ Art.propTypes = {
     }),
     editFn: PropTypes.func.isRequired,
     deleteFn: PropTypes.func.isRequired,
+    detailFn: PropTypes.func.isRequired,
 };
 
 export default Art;

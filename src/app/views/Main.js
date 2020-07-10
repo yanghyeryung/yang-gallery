@@ -1,7 +1,7 @@
 import React from 'react';
 import Cookies from 'js-cookie';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
+import { faSignOutAlt, faImage, faBook } from '@fortawesome/free-solid-svg-icons';
 
 import Gallery from './Gallery';
 import GuestBook from './GuestBook';
@@ -83,26 +83,17 @@ class Main extends React.Component {
                         <img src="./images/yang.jpeg" alt="yang"></img>
                     </div>
                     <div className="header-desc-wrap">
-
+                        양혜령 그림을 볼 수 있는 갤러리입니다.
                     </div>
-                    <ul className="header-icon-wrap">
-                        <li>
-                            <a href="" className="" />
-                        </li>
-                        <li>
-                            <a href="" className="" />
-                        </li>
-                        <li>
-                            <a href="" className="" />
-                        </li>
-                        <li>
-                            <a href="" className="" />
-                        </li>
-                    </ul>
+
+                    <button className={activeTabMode === 'gallery'? "tab-btn on" : "tab-btn"} onClick={this.changeMode} data-mode="gallery">
+                        <FontAwesomeIcon icon={faImage} /> 갤러리
+                    </button>
+                    <button className={activeTabMode === 'guestbook'? "tab-btn on" : "tab-btn"}  onClick={this.changeMode} data-mode="guestbook">
+                        <FontAwesomeIcon icon={faBook} /> 방명록
+                    </button>
                 </div>
 
-                <button onClick={this.changeMode} data-mode="gallery">Gallery</button>
-                <button onClick={this.changeMode} data-mode="guestbook">GuestBook</button>
                 {activeTabMode === 'gallery' && <Gallery />}
                 {activeTabMode === 'guestbook' && <GuestBook />}
             </div>

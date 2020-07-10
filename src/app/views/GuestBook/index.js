@@ -1,6 +1,7 @@
 import React from 'react';
 import * as firebase from 'firebase';
 import moment from 'moment';
+import { v4 as uuid } from 'uuid';
 
 import Article from './Article';
 
@@ -32,7 +33,6 @@ class GuestBook extends React.Component {
 
                 articleMap[article.key] = {
                     key: article.key,
-                    title: articleVal.title,
                     name: articleVal.name,
                     desc: articleVal.desc,
                     date: articleVal.date,
@@ -96,7 +96,7 @@ class GuestBook extends React.Component {
                 });
         } else {
             // 추가
-            detail.key = this.state.detail.title + '-' + moment().format('YYYYMMDDhhmmss');
+            detail.key = uuid();
 
             let articles = Object.assign({[detail.key]: detail}, this.state.articles);
 
@@ -105,6 +105,7 @@ class GuestBook extends React.Component {
                     alert('추가 성공');
                     this.setState({
                         editMode: false,
+                        detail: {},
                     });
                 })
                 .catch(() => {
@@ -127,35 +128,31 @@ class GuestBook extends React.Component {
         for (let key in articles) {
             if (articles.hasOwnProperty(key)) {
                 let article = articles[key];
-                articleHtmlList.push(<Article article={article} editFn={this.edit} deleteFn={this.delete}/>);
+                articleHtmlList.push(<Article key={key} article={article} editFn={this.edit} deleteFn={this.delete}/>);
             }
         }
 
         return (
             <div className="guest-book-wrap">
-                {!editMode && <button className="btn" onClick={this.add}>+</button>}
-                {
-                    editMode ?
-                        <form>
-                            <div className="form-item">
-                                <label>title</label>
-                                <input name="title" value={detail.title} onChange={this.changeDetail}/>
-                            </div>
-                            <div className="form-item">
-                                <label>name</label>
-                                <input name="name" value={detail.name} onChange={this.changeDetail}/>
-                            </div>
-                            <div className="form-item">
-                                <label>desc</label>
-                                <input name="desc" value={detail.desc} onChange={this.changeDetail}/>
-                            </div>
-                            <button onClick={this.save}>save</button>
-                        </form>
-                        :
-                        <div>
-                            {articleHtmlList}
+                <form>
+                    <div className="input-wrap">
+                        <div className="form-item">
+                            <label>이름</label>
+                            <input name="name" value={detail.name} onChange={this.changeDetail}/>
                         </div>
-                }
+                        <div className="form-item">
+                            <label>내용</label>
+                            <textarea name="desc" value={detail.desc} onChange={this.changeDetail}>
+                        </textarea>
+                        </div>
+                    </div>
+                    <div className="btn-wrap">
+                        <button onClick={this.save}>저장</button>
+                    </div>
+                </form>
+                <div className="article-list-wrap">
+                    {articleHtmlList}
+                </div>
             </div>
         );
     }
