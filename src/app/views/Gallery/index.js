@@ -1,6 +1,5 @@
 import React from 'react';
 import * as firebase from 'firebase';
-import moment from 'moment';
 import $ from 'jquery';
 import { v4 as uuid } from 'uuid';
 
@@ -14,6 +13,7 @@ class Gallery extends React.Component {
             arts: {},
             detail: {},
             editMode: false,
+            detailMode: false,
         };
 
         this.database = firebase.database();
@@ -23,6 +23,8 @@ class Gallery extends React.Component {
         this.edit = this.edit.bind(this);
         this.delete = this.delete.bind(this);
         this.save = this.save.bind(this);
+        this.detail = this.detail.bind(this);
+        this.closeDetail = this.closeDetail.bind(this);
         this.changeDetail = this.changeDetail.bind(this);
         this.openUploadImagePopup = this.openUploadImagePopup.bind(this);
         this.uploadImage = this.uploadImage.bind(this);
@@ -39,8 +41,6 @@ class Gallery extends React.Component {
                     key: art.key,
                     title: artVal.title,
                     image: artVal.image,
-                    desc: artVal.desc,
-                    date: artVal.date,
                 };
             });
 
@@ -85,7 +85,7 @@ class Gallery extends React.Component {
     save(e) {
         e.preventDefault();
 
-        let detail = Object.assign({date: moment().format('YYYY/MM/DD')}, this.state.detail);
+        let detail = Object.assign({}, this.state.detail);
 
         if (detail.key) {
             // 수정
@@ -118,10 +118,19 @@ class Gallery extends React.Component {
         }
     }
 
-    detail (e) {
+    detail(e) {
         let key = e.currentTarget.getAttribute('data-key');
 
-        this.state.arts[key];
+        this.setState({
+            detail: Object.assign({}, this.state.arts[key]),
+            detailMode: true,
+        });
+    }
+
+    closeDetail() {
+        this.setState({
+            detailMode: false,
+        });
     }
 
     changeDetail(e) {
@@ -156,7 +165,7 @@ class Gallery extends React.Component {
     }
 
     render() {
-        const {detail, editMode, arts} = this.state;
+        const {detail, editMode, arts, detailMode} = this.state;
         const hideStyle = {display: 'none'};
 
         let artHtmlList = {
@@ -171,7 +180,7 @@ class Gallery extends React.Component {
             if (arts.hasOwnProperty(key)) {
                 let art = arts[key];
 
-                artHtmlList[artKey].push(<Art key={key} art={art} editFn={this.edit} deleteFn={this.delete}/>);
+                artHtmlList[artKey].push(<Art key={key} art={art} editFn={this.edit} deleteFn={this.delete} detailFn={this.detail}/>);
                 artKey ++;
                 (artKey === 3) && (artKey = 0);
             }
@@ -195,10 +204,6 @@ class Gallery extends React.Component {
                                     this.state.detail.image && <img src={detail.image} width="300"></img>
                                 }
                             </div>
-                            <div className="form-item">
-                                <label>desc</label>
-                                <input name="desc" value={detail.desc} onChange={this.changeDetail}/>
-                            </div>
                             <button onClick={this.save}>save</button>
                         </form>
                         :
@@ -206,9 +211,13 @@ class Gallery extends React.Component {
                             <div>{artHtmlList[0]}</div>
                             <div>{artHtmlList[1]}</div>
                             <div>{artHtmlList[2]}</div>
-                            <div className="art-detail-wrap">
-
-                            </div>
+                            {
+                                detailMode && <div className="art-detail-wrap" onClick={this.closeDetail}>
+                                    <div className="art-detail-conts">
+                                        <img className={detailMode && "on"} src={this.state.detail.image}></img>
+                                    </div>
+                                </div>
+                            }
                         </div>
                 }
             </div>

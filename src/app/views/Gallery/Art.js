@@ -12,7 +12,7 @@ class Art extends React.Component {
             <div className="art-wrap" onClick={detailFn} data-key={art.key}>
                 <img src={art.image} width="300"></img>
                 <div className="title">{art.title}</div>
-                { /* <div className="desc">{art.desc}</div>
+                { /*
                     <button onClick={editFn} data-key={art.key}>수정!</button>
                     <button onClick={deleteFn} data-key={art.key}>삭제</button>
                 */ }
@@ -25,8 +25,6 @@ Art.propTypes = {
     art: PropTypes.shape({
         title: PropTypes.string.isRequired,
         image: PropTypes.string.isRequired,
-        desc: PropTypes.string,
-        date: PropTypes.string.isRequired,
     }),
     editFn: PropTypes.func.isRequired,
     deleteFn: PropTypes.func.isRequired,

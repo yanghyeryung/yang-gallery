@@ -169,6 +169,11 @@
       border-radius: 4px;
       margin-bottom: 20px;
       background: rgba(255, 255, 255, 0.075);
+      cursor: pointer;
+
+      &:hover {
+        box-shadow: 0 0 10px 0 #e0a7c5;
+      }
     }
 
     img {
@@ -184,8 +189,26 @@
     }
   }
 
-  .art-detail-wrap {
-    display: none;
+  div.art-detail-wrap {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0, 0, 0.7);
+
+    .art-detail-conts {
+      position: relative;
+      width: 60%;
+      max-width: 500px;
+      margin: 0 auto;
+      margin-top: 50px;
+      margin-bottom: 20px;
+    }
+
+    img {
+      border-radius: 4px;
+    }
   }
 }
 
@@ -276,6 +299,10 @@
       > div {
         width: 100% !important;
       }
+
+      div.art-detail-wrap {
+        width: 100% !important;
+      }
     }
   }
 }
@@ -285,6 +312,10 @@
     .art-list-wrap {
       > div {
         width: 50% !important;
+      }
+
+      div.art-detail-wrap {
+        width: 100% !important;
       }
     }
   }
