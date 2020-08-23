@@ -1,6 +1,7 @@
 import React, { useCallback, useState, useEffect } from 'react';
 import * as firebase from 'firebase';
 import $ from 'jquery';
+import moment from 'moment';
 import { v4 as uuid } from 'uuid';
 
 import GalleryItem from './GalleryItem';
@@ -18,15 +19,14 @@ const Gallery = (props) => {
     useEffect(() => {
         database.ref('gallery').on('value', (galleryItems) => {
             let itemMap = {};
+            let itemsArray = [];
 
             galleryItems.forEach((item) => {
-                const itemVal = item.val();
+                itemsArray.push(item.val());
+            });
 
-                itemMap[item.key] = {
-                    key: item.key,
-                    title: itemVal.title,
-                    image: itemVal.image,
-                };
+            itemsArray.sort((a, b) => { return moment(b.date) - moment(a.date) }).map((item) => {
+                itemMap[item.key] = item;
             });
 
             setItems(itemMap);
@@ -66,9 +66,14 @@ const Gallery = (props) => {
     const saveFn = useCallback((e) => {
         e.preventDefault();
 
-        if (detail.key) {
+        let newDetail = {
+            date: moment().format('YYYY/MM/DD hh:mm:ss'),
+            ... detail
+        }
+
+        if (newDetail.key) {
             // 수정
-            database.ref('gallery/' + detail.key).set(detail)
+            database.ref('gallery/' + newDetail.key).set(newDetail)
                 .then(() => {
                     alert('수정 성공');
                     setEditMode(false);
@@ -78,8 +83,11 @@ const Gallery = (props) => {
                 });
         } else {
             // 추가
+            let newDetailKey = uuid();
+            newDetail.key = newDetailKey;
+            
             let newItems = {
-                [uuid()]: detail,
+                [newDetailKey]: newDetail,
                 ...items
             }
 
@@ -161,7 +169,7 @@ const Gallery = (props) => {
 
     return (
         <div className="gallery-wrap">
-            {!editMode && <button className="btn" onClick={addFn}>+</button>}
+            {/*!editMode && <button className="btn" onClick={addFn}>+</button>*/}
             {
                 editMode ?
                     <form>

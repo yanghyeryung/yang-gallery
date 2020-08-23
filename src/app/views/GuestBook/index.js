@@ -79,8 +79,11 @@ const GuestBook = (props) => {
                 });
         } else {
             // 추가
+            let newDetailKey = uuid();
+            newDetail.key = newDetailKey;
+
             let newItems = {
-                [uuid()]: newDetail,
+                [newDetailKey]: newDetail,
                 ...items
             }
 
