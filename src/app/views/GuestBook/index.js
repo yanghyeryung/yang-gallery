@@ -121,11 +121,11 @@ const GuestBook = (props) => {
                 <div className="input-wrap">
                     <div className="form-item">
                         <label>이름</label>
-                        <input name="name" value={detail.name} onChange={changeDetailFn}/>
+                        <input name="name" value={detail.name ? detail.name : ''} onChange={changeDetailFn}/>
                     </div>
                     <div className="form-item">
                         <label>내용</label>
-                        <textarea name="desc" value={detail.desc} onChange={changeDetailFn}>
+                        <textarea name="desc" value={detail.desc ? detail.desc : ''} onChange={changeDetailFn}>
                     </textarea>
                     </div>
                 </div>
