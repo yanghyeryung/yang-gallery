@@ -1,46 +1,41 @@
-import React from 'react';
+import React, { useCallback, useRef } from 'react'
 import * as firebase from 'firebase';
 import Cookies from 'js-cookie';
 
-class Login extends React.Component {
-    constructor(props) {
-        super(props);
+const Login = (props) => {
 
-        this.login = this.login.bind(this);
-    }
+    const idEl = useRef(null);
+    const pwEl = useRef(null);
 
-    login(e) {
+    const loginFn = useCallback((e) => {
         e.preventDefault();
 
-        const id = this.refs.id.value;
+        const id = idEl.current.value;
         const database = firebase.database();
-        const {history} = this.props;
 
         database.ref('user/' + id).once('value').then((user) => {
             let userVal = user.val();
 
-            if (userVal && userVal.id === id && userVal.pwd === this.refs.pwd.value) {
+            if (userVal && userVal.id === id && userVal.pwd === pwEl.current.value) {
                 Cookies.set('authToken', userVal.id);
-                history.push('/');
-            }else {
+                props.history.push('/');
+            } else {
                 alert('로그인 실패!');
             }
         });
-    }
+    }, []);
 
-    render() {
-        return (
-            <form className="login-wrap">
-                <label>
-                    <span className="title">YANG</span>
-                    GALLERY
-                </label>
-                <input ref="id" type="text" placeholder="ID"/>
-                <input ref="pwd" type="password" placeholder="PASSWORD"/>
-                <button onClick={this.login}>LOGIN</button>
-            </form>
-        );
-    }
-}
+    return (
+        <form className="login-wrap">
+            <label>
+                <span className="title">YANG</span>
+                GALLERY
+            </label>
+            <input ref={idEl} type="text" placeholder="ID"/>
+            <input ref={pwEl} type="password" placeholder="PASSWORD"/>
+            <button onClick={loginFn}>LOGIN</button>
+        </form>
+    );
+};
 
-export default Login;
+export default React.memo(Login);

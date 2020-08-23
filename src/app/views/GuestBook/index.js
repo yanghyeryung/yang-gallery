@@ -1,161 +1,143 @@
-import React from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import * as firebase from 'firebase';
 import moment from 'moment';
 import { v4 as uuid } from 'uuid';
 
-import Article from './Article';
+import GuestBookItem from './GuestBookItem';
 
-class GuestBook extends React.Component {
-    constructor(props) {
-        super(props);
+const GuestBook = (props) => {
+    const database = firebase.database();
 
-        this.state = {
-            articles: {},
-            detail: {},
-            editMode: false,
-        };
+    const [items, setItems] = useState({});
+    const [detail, setDetail] = useState({});
+    const [editMode, setEditMode] = useState(false);
 
-        this.database = firebase.database();
+    useEffect(() => {
+        database.ref('guestbook').on('value', (guestbookItems) => {
+            let itemMap = {};
 
-        this.add = this.add.bind(this);
-        this.edit = this.edit.bind(this);
-        this.delete = this.delete.bind(this);
-        this.save = this.save.bind(this);
-        this.changeDetail = this.changeDetail.bind(this);
-    }
+            guestbookItems.forEach((item) => {
+                const itemVal = item.val();
 
-    componentWillMount() {
-        this.database.ref('article').on('value', (articles) => {
-            let articleMap = {};
-
-            articles.forEach((article) => {
-                const articleVal = article.val();
-
-                articleMap[article.key] = {
-                    key: article.key,
-                    name: articleVal.name,
-                    desc: articleVal.desc,
-                    date: articleVal.date,
+                itemMap[item.key] = {
+                    key: item.key,
+                    name: itemVal.name,
+                    desc: itemVal.desc,
+                    date: itemVal.date,
                 };
             });
 
-            this.setState({
-                articles: articleMap,
-            });
+            setItems(itemMap);
         });
-    }
 
-    componentWillUnmount() {
-        this.database.ref('article').off('value');
-    }
+        return () => {
+            database.ref('guestbook').off('value');
+        };
+    }, []);
 
-    add() {
-        this.setState({
-            editMode: true,
-            detail: {},
-        });
-    }
+    const addFn = useCallback(() => {
+        setEditMode(true);
+        setDetail({});
+    }, []);
 
-    edit(e) {
+    const editFn = useCallback((e) => {
         let key = e.currentTarget.getAttribute('data-key');
 
-        this.setState({
-            editMode: true,
-            detail: Object.assign({}, this.state.articles[key]),
+        setEditMode(true);
+        setDetail({
+            ...items[key],
         });
-    }
+    }, [items]);
 
-    delete(e) {
+    const deleteFn = useCallback((e) => {
         let key = e.currentTarget.getAttribute('data-key');
 
-        this.database.ref('article/' + key).remove()
-            .then(() => {
-                alert('삭제 성공');
-            })
-            .catch(() => {
-                alert('삭제 실패');
-            });
-    }
+        database.ref('guestbook/' + key).remove()
+        .then(() => {
+            alert('삭제 성공');
+        })
+        .catch(() => {
+            alert('삭제 실패');
+        });
+    }, []);
 
-    save(e) {
+    const saveFn = useCallback((e) => {
         e.preventDefault();
 
-        let detail = Object.assign({date: moment().format('YYYY/MM/DD')}, this.state.detail);
+        let newDetail = {
+            date: moment().format('YYYY/MM/DD'),
+            ... detail
+        }
 
-        if (detail.key) {
+        if (newDetail.key) {
             // 수정
-            this.database.ref('article/' + detail.key).set(detail)
+            database.ref('guestbook/' + newDetail.key).set(newDetail)
                 .then(() => {
                     alert('수정 성공');
-                    this.setState({
-                        editMode: false,
-                    });
+                    setEditMode(false);
                 })
                 .catch(() => {
                     alert('수정 실패');
                 });
         } else {
             // 추가
-            detail.key = uuid();
+            let newItems = {
+                [uuid()]: newDetail,
+                ...items
+            }
 
-            let articles = Object.assign({[detail.key]: detail}, this.state.articles);
-
-            this.database.ref('article').set(articles)
+            database.ref('guestbook').set(newItems)
                 .then(() => {
                     alert('추가 성공');
-                    this.setState({
-                        editMode: false,
-                        detail: {},
-                    });
+                    setEditMode(false);
+                    setDetail({})
                 })
                 .catch(() => {
                     alert('추가 실패');
                 });
         }
-    }
+    }, [detail, items]);
 
-    changeDetail(e) {
-        this.setState({
-            detail: Object.assign({}, this.state.detail, {[e.target.name]: e.target.value}),
+    const changeDetailFn = useCallback((e) => {
+        setDetail({
+            ...detail,
+            [e.target.name]: e.target.value
         });
-    }
+    }, [detail]);
 
-    render() {
-        const {detail, editMode, articles} = this.state;
+    // render
+    let itemHtmlList = [];
 
-        let articleHtmlList = [];
-
-        for (let key in articles) {
-            if (articles.hasOwnProperty(key)) {
-                let article = articles[key];
-                articleHtmlList.push(<Article key={key} article={article} editFn={this.edit} deleteFn={this.delete}/>);
-            }
+    for (let key in items) {
+        if (items.hasOwnProperty(key)) {
+            let item = items[key];
+            itemHtmlList.push(<GuestBookItem key={key} item={item} editFn={editFn} deleteFn={deleteFn}/>);
         }
-
-        return (
-            <div className="guest-book-wrap">
-                <form>
-                    <div className="input-wrap">
-                        <div className="form-item">
-                            <label>이름</label>
-                            <input name="name" value={detail.name} onChange={this.changeDetail}/>
-                        </div>
-                        <div className="form-item">
-                            <label>내용</label>
-                            <textarea name="desc" value={detail.desc} onChange={this.changeDetail}>
-                        </textarea>
-                        </div>
-                    </div>
-                    <div className="btn-wrap">
-                        <button onClick={this.save}>저장</button>
-                    </div>
-                </form>
-                <div className="article-list-wrap">
-                    {articleHtmlList}
-                </div>
-            </div>
-        );
     }
+
+    return (
+        <div className="guest-book-wrap">
+            <form>
+                <div className="input-wrap">
+                    <div className="form-item">
+                        <label>이름</label>
+                        <input name="name" value={detail.name} onChange={changeDetailFn}/>
+                    </div>
+                    <div className="form-item">
+                        <label>내용</label>
+                        <textarea name="desc" value={detail.desc} onChange={changeDetailFn}>
+                    </textarea>
+                    </div>
+                </div>
+                <div className="btn-wrap">
+                    <button onClick={saveFn}>저장</button>
+                </div>
+            </form>
+            <div className="list-wrap">
+                {itemHtmlList}
+            </div>
+        </div>
+    );
 }
 
-export default GuestBook;
+export default React.memo(GuestBook);
