@@ -15,16 +15,14 @@ const GuestBook = (props) => {
     useEffect(() => {
         database.ref('guestbook').on('value', (guestbookItems) => {
             let itemMap = {};
+            let itemsArray = [];
 
             guestbookItems.forEach((item) => {
-                const itemVal = item.val();
+                itemsArray.push(item.val());
+            });
 
-                itemMap[item.key] = {
-                    key: item.key,
-                    name: itemVal.name,
-                    desc: itemVal.desc,
-                    date: itemVal.date,
-                };
+            itemsArray.sort((a, b) => { return moment(b.date) - moment(a.date) }).map((item) => {
+                itemMap[item.key] = item;
             });
 
             setItems(itemMap);
@@ -65,7 +63,7 @@ const GuestBook = (props) => {
         e.preventDefault();
 
         let newDetail = {
-            date: moment().format('YYYY/MM/DD'),
+            date: moment().format('YYYY/MM/DD hh:mm:ss'),
             ... detail
         }
 
