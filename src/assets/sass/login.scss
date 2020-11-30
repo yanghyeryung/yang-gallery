@@ -1,0 +1,49 @@
+// login
+.login-wrap {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 350px;
+  height: 330px;
+  background: $base-bg-color;
+  border: 1px solid $base-bd-color;
+  border-radius: 4px;
+  margin-left: -175px;
+  margin-top: -165px;
+  padding: 40px;
+
+  * {
+    width: 100%;
+    display: block;
+  }
+
+  label {
+    color: $base-font-color;
+    text-align: center;
+    margin-bottom: 40px;
+    font-size: 14px;
+    letter-spacing: 8px;
+
+    .title {
+      font-size: 28px;
+      letter-spacing: 3px;
+
+      img {
+        width: 40px;
+        margin: 0 auto;
+        padding: 5px;
+      }
+    }
+  }
+
+  input {
+    height: 45px;
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+
+  button {
+    padding: 15px;
+    margin-top: 20px;
+  }
+}

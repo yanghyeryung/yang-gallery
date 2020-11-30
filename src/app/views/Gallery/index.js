@@ -3,18 +3,23 @@ import * as firebase from 'firebase';
 import $ from 'jquery';
 import moment from 'moment';
 import { v4 as uuid } from 'uuid';
+import { useAlert } from 'react-alert';
+import { useSelector } from 'react-redux'
 
 import GalleryItem from './GalleryItem';
 
 const Gallery = (props) => {
-
     const database = firebase.database();
     const storage = firebase.storage().ref();
     
+    const userState = useSelector((state) => state.user)
+
     const [items, setItems] = useState({});
     const [detail, setDetail] = useState({});
     const [editMode, setEditMode] = useState(false);
     const [detailMode, setDetailMode] = useState(false);
+
+    const alert = useAlert()
 
     useEffect(() => {
         database.ref('gallery').on('value', (galleryItems) => {
@@ -56,10 +61,16 @@ const Gallery = (props) => {
 
         database.ref('gallery/' + key).remove()
             .then(() => {
-                alert('삭제 성공');
+                alert.show('삭제 성공', {
+                    type: 'success',
+                    timeout: 2000,
+                });
             })
             .catch(() => {
-                alert('삭제 실패');
+                alert.show('삭제 실패', {
+                    type: 'error',
+                    timeout: 2000,
+                });
             });
     }, []);
 
@@ -75,11 +86,17 @@ const Gallery = (props) => {
             // 수정
             database.ref('gallery/' + newDetail.key).set(newDetail)
                 .then(() => {
-                    alert('수정 성공');
+                    alert.show('수정 성공', {
+                        type: 'success',
+                        timeout: 2000,
+                    });
                     setEditMode(false);
                 })
                 .catch(() => {
-                    alert('수정 실패');
+                    alert.show('수정 실패', {
+                        type: 'error',
+                        timeout: 2000,
+                    });
                 });
         } else {
             // 추가
@@ -93,11 +110,17 @@ const Gallery = (props) => {
 
             database.ref('gallery').set(newItems)
                 .then(() => {
-                    alert('추가 성공');
+                    alert.show('추가 성공', {
+                        type: 'success',
+                        timeout: 2000,
+                    });
                     setEditMode(false);
                 })
                 .catch(() => {
-                    alert('추가 실패');
+                    alert.show('추가 실패', {
+                        type: 'error',
+                        timeout: 2000,
+                    });
                 });
         }
     }, [detail, items]);
@@ -133,7 +156,10 @@ const Gallery = (props) => {
 
         storage.child(`images/${fileName}`).put(selectedFile)
             .then((snapshot) => {
-                alert('이미지 추가 성공');
+                alert.show('이미지 추가 성공', {
+                    type: 'success',
+                    timeout: 2000,
+                });
 
                 snapshot.ref.getDownloadURL().then((downloadURL) => {
                     setDetail({
@@ -143,7 +169,10 @@ const Gallery = (props) => {
                 });
             })
             .catch(() => {
-                alert('이미지 추가 실패');
+                alert.show('이미지 추가 실패', {
+                    type: 'error',
+                    timeout: 2000,
+                });
             });
     }, [detail]);
 
@@ -153,6 +182,7 @@ const Gallery = (props) => {
         0: [],
         1: [],
         2: [],
+        3: [],
     };
 
     let itemKey = 0;
@@ -163,13 +193,14 @@ const Gallery = (props) => {
 
             itemHtmlList[itemKey].push(<GalleryItem key={key} item={item} editFn={editFn} deleteFn={deleteFn} detailFn={detailFn}/>);
             itemKey ++;
-            (itemKey === 3) && (itemKey = 0);
+            (itemKey === 4) && (itemKey = 0);
         }
     }
+    
 
     return (
         <div className="gallery-wrap">
-            {/*!editMode && <button className="btn" onClick={addFn}>+</button>*/}
+            { userState.id === 'admin' && !editMode && <button className="btn" onClick={addFn}>+</button>}
             {
                 editMode ?
                     <form>
@@ -192,6 +223,7 @@ const Gallery = (props) => {
                         <div>{itemHtmlList[0]}</div>
                         <div>{itemHtmlList[1]}</div>
                         <div>{itemHtmlList[2]}</div>
+                        <div>{itemHtmlList[3]}</div>
                         {
                             detailMode && <div className="detail-wrap" onClick={closeDetailFn}>
                                 <div className="detail-conts">

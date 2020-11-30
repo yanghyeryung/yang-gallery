@@ -2,11 +2,23 @@ import React, { useCallback, useState } from 'react';
 import Cookies from 'js-cookie';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSignOutAlt, faImage, faBook } from '@fortawesome/free-solid-svg-icons';
+import useReactRouter from 'use-react-router'
+import { useSelector, useDispatch } from 'react-redux'
+
+import { resetUser } from 'store/user'
 
 import Gallery from './Gallery';
 import GuestBook from './GuestBook';
 
-const Main = (props) => {
+const Main = () => {
+    const { history } = useReactRouter()
+    
+    const userState = useSelector((state) => state.user)
+
+    const dispatch = useDispatch()
+    const userActions = {
+        resetUser: () => dispatch(resetUser()),
+    };
 
     const [activeTabMode, setActiveTabMode] = useState('gallery');
     const [searchMode, setSearchMode] = useState(false);
@@ -25,8 +37,9 @@ const Main = (props) => {
     }, []);
 
     const logoutFn = useCallback(() => {
+        userActions.resetUser();
         Cookies.remove('authToken');
-        props.history.push('/login');
+        history.push('/login');
     }, []);
 
     const changeModeFn = useCallback((e) => {
@@ -48,9 +61,12 @@ const Main = (props) => {
                         <button onClick={showSearchArtFn}>search</button>
                 */}
                 <div className="header-btn-wrap">
-                    <button className="icon-btn" onClick={logoutFn}>
-                        <FontAwesomeIcon icon={faSignOutAlt} />
-                    </button>
+                    {
+                        userState.id === 'admin' &&
+                        <button className="icon-btn" onClick={logoutFn}>
+                            <FontAwesomeIcon icon={faSignOutAlt} />
+                        </button>
+                    }
                 </div>
 
                 <div className="header-picture-wrap">

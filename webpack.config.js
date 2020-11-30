@@ -3,6 +3,11 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 
+const project_path = {
+  src: path.join(__dirname, 'src'),
+  dist: path.join(__dirname, 'dist'),
+}
+
 module.exports = (env, argv) => {
   console.log(argv.mode);
   return {
@@ -12,7 +17,13 @@ module.exports = (env, argv) => {
     },
     output: {
       filename: "[name].[hash].js",
-      path: path.resolve("./dist"),
+      path: project_path.dist,
+    },
+    resolve: {
+      alias: {
+        store: path.join(project_path.src, 'app/store'),
+        views: path.join(project_path.src, 'app/views'),
+      },
     },
     module: {
       rules: [

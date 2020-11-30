@@ -1,0 +1,108 @@
+//guestbook
+.guest-book-wrap {
+  max-width: 600px;
+  padding: 20px;
+  margin: 0 auto;
+
+  form {
+    border: 1px solid $base-bd-color;
+    border-radius: 4px;
+    padding: 20px;
+
+    .input-wrap {
+      display: inline-block;
+      width: 80%;
+    }
+
+    .btn-wrap {
+      display: inline-block;
+      float: right;
+      width: 20%;
+    }
+
+    .form-item {
+      label {
+        display: inline-block;
+        width: 25%;
+        color: $base-font-color;
+        vertical-align: top;
+        padding-top: 5px;
+      }
+
+      input, textarea {
+        width: 75%;
+      }
+
+      input {
+        height: 20px;
+        padding: 10px;
+        margin-bottom: 5px;
+      }
+
+      textarea {
+        height: 50px;
+        padding: 10px;
+        resize: none;
+      }
+    }
+
+    button {
+      height: 80px;
+      width: calc(100% - 20px);
+      margin-left: 20px;
+    }
+   }
+
+  .list-wrap {
+    margin-top: 40px;
+
+    .item-wrap {
+      border: 1px solid $base-bd-color;
+      border-radius: 4px;
+      padding: 20px;
+      background: $base-bg-color;
+      color: $base-font-color;
+      margin-bottom: 10px;
+
+      .name {
+        font-size: 15px;
+        margin-bottom: 10px;
+        display: inline-block;
+        margin-right: 5px;
+      }
+
+      .date {
+        font-size: 8px;
+        display: inline-block;
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 320px) {
+  .main-wrap {
+    .list-wrap {
+      > div {
+        width: 100% !important;
+      }
+
+      div.detail-wrap {
+        width: 100% !important;
+      }
+    }
+  }
+}
+
+@media screen and (min-width: 321px) and (max-width: 900px) {
+  .main-wrap {
+    .list-wrap {
+      > div {
+        width: 50% !important;
+      }
+
+      div.detail-wrap {
+        width: 100% !important;
+      }
+    }
+  }
+}

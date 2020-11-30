@@ -2,6 +2,7 @@ import React, { useCallback, useState, useEffect } from 'react';
 import * as firebase from 'firebase';
 import moment from 'moment';
 import { v4 as uuid } from 'uuid';
+import { useAlert } from 'react-alert';
 
 import GuestBookItem from './GuestBookItem';
 
@@ -11,6 +12,8 @@ const GuestBook = (props) => {
     const [items, setItems] = useState({});
     const [detail, setDetail] = useState({});
     const [editMode, setEditMode] = useState(false);
+
+    const alert = useAlert()
 
     useEffect(() => {
         database.ref('guestbook').on('value', (guestbookItems) => {
@@ -52,10 +55,16 @@ const GuestBook = (props) => {
 
         database.ref('guestbook/' + key).remove()
         .then(() => {
-            alert('삭제 성공');
+            alert.show('삭제 성공', {
+                type: 'success',
+                timeout: 2000,
+            });
         })
         .catch(() => {
-            alert('삭제 실패');
+            alert.show('삭제 실패', {
+                type: 'error',
+                timeout: 2000,
+            });
         });
     }, []);
 
@@ -71,11 +80,17 @@ const GuestBook = (props) => {
             // 수정
             database.ref('guestbook/' + newDetail.key).set(newDetail)
                 .then(() => {
-                    alert('수정 성공');
+                    alert.show('수정 성공', {
+                        type: 'success',
+                        timeout: 2000,
+                    });
                     setEditMode(false);
                 })
                 .catch(() => {
-                    alert('수정 실패');
+                    alert.show('수정 실패', {
+                        type: 'error',
+                        timeout: 2000,
+                    });
                 });
         } else {
             // 추가
@@ -89,12 +104,18 @@ const GuestBook = (props) => {
 
             database.ref('guestbook').set(newItems)
                 .then(() => {
-                    alert('추가 성공');
+                    alert.show('추가 성공', {
+                        type: 'success',
+                        timeout: 2000,
+                    });
                     setEditMode(false);
                     setDetail({})
                 })
                 .catch(() => {
-                    alert('추가 실패');
+                    alert.show('추가 실패', {
+                        type: 'error',
+                        timeout: 2000,
+                    });
                 });
         }
     }, [detail, items]);

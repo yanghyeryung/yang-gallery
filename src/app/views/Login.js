@@ -1,9 +1,21 @@
 import React, { useCallback, useRef } from 'react'
 import * as firebase from 'firebase';
 import Cookies from 'js-cookie';
+import { useAlert } from 'react-alert';
+import useReactRouter from 'use-react-router'
+import { useDispatch } from 'react-redux'
 
-const Login = (props) => {
+import { setUser } from 'store/user'
 
+const Login = () => {
+    const { history } = useReactRouter()
+    const alert = useAlert()
+    const dispatch = useDispatch()
+    
+    const userActions = {
+        setUser: (data) => dispatch(setUser(data)),
+    };
+    
     const idEl = useRef(null);
     const pwEl = useRef(null);
 
@@ -17,10 +29,14 @@ const Login = (props) => {
             let userVal = user.val();
 
             if (userVal && userVal.id === id && userVal.pwd === pwEl.current.value) {
+                userActions.setUser(userVal.id)
                 Cookies.set('authToken', userVal.id);
-                props.history.push('/');
+                history.push('/');
             } else {
-                alert('로그인 실패!');
+                alert.show('로그인 실패', {
+                    type: 'error',
+                    timeout: 2000,
+                });
             }
         });
     }, []);

@@ -1,7 +1,15 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import App from './App';
 import * as firebase from 'firebase';
+import { HashRouter as Router, Route, Switch } from 'react-router-dom';
+import { transitions, positions, Provider as AlertProvider } from 'react-alert';
+import AlertTemplate from 'react-alert-template-basic';
+import { Provider } from 'react-redux';
+
+import store from 'store'
+
+import Login from 'views/Login';
+import Main from 'views/Main';
 
 // firebase setting
 let firebaseConfig = {
@@ -15,6 +23,28 @@ let firebaseConfig = {
 };
 firebase.initializeApp(firebaseConfig);
 
+const alertOptions = {
+    position: positions.BOTTOM_CENTER,
+    timeout: 5000,
+    offset: '30px',
+    transition: transitions.SCALE
+}
+
+const App = () => {
+    return (
+      <Provider store={store}>
+      <AlertProvider template={AlertTemplate} {...alertOptions}>
+        <Router>
+            <Switch>
+                  <Route exact path='/login' component={Login}/>
+                  <Route path='/' component={Main}/>
+            </Switch>
+        </Router>
+        </AlertProvider>
+        </Provider>
+    );
+}
+  
 // render
 ReactDOM.render(
     <React.StrictMode>

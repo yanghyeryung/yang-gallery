@@ -1,0 +1,17 @@
+{
+  "files.exclude": {
+    ".editorconfig": true,
+    ".eslintignore": true,
+    ".vscode/": true,
+    "**/.gitignore": true,
+    "**/.gitkeep": true,
+    "node_modules/": true,
+    "node/": true,
+    "dist/": true,
+    "yarn.lock": true
+  },
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
+  "search.useGlobalIgnoreFiles": true
+}
