@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import Cookies from 'js-cookie';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSignOutAlt, faImage, faBook } from '@fortawesome/free-solid-svg-icons';
+import { faSignOutAlt, faUserCog, faSearch, faImage, faBook } from '@fortawesome/free-solid-svg-icons';
 import useReactRouter from 'use-react-router'
 import { useSelector, useDispatch } from 'react-redux'
 
@@ -21,24 +21,14 @@ const Main = () => {
     };
 
     const [activeTabMode, setActiveTabMode] = useState('gallery');
-    const [searchMode, setSearchMode] = useState(false);
-
-    const showSearchArtFn = useCallback(() => {
-        setSearchMode(true);
-    }, []);
-
-    const hideSearchArtFn = useCallback(() => {
-        setSearchMode(false);
-    }, []);
-
-    const searchArtFn = useCallback((e) => {
-        if (e.key === 'Enter') {
-        }
-    }, []);
 
     const logoutFn = useCallback(() => {
         userActions.resetUser();
         Cookies.remove('authToken');
+        moveLoginPage();
+    }, []);
+
+    const moveLoginPage = useCallback(() => {
         history.push('/login');
     }, []);
 
@@ -51,22 +41,17 @@ const Main = () => {
     return (
         <div className="main-wrap">
             <div className="header">
-                {/*
-                    searchMode ?
-                        <div className="search-wrap">
-                            <input ref="search" onKeyDown={searchArtFn}/>
-                            <button onClick={hideSearchArtFn}>x</button>
-                        </div>
-                        :
-                        <button onClick={showSearchArtFn}>search</button>
-                */}
                 <div className="header-btn-wrap">
-                    {
-                        userState.id === 'admin' &&
-                        <button className="icon-btn" onClick={logoutFn}>
-                            <FontAwesomeIcon icon={faSignOutAlt} />
-                        </button>
-                    }
+                {
+                    userState.id === 'admin' ?
+                    <button className="icon-btn" onClick={logoutFn}>
+                        <FontAwesomeIcon icon={faSignOutAlt} />
+                    </button>
+                    :
+                    <button className="icon-btn" onClick={moveLoginPage}>
+                        <FontAwesomeIcon icon={faUserCog} />
+                    </button>
+                }
                 </div>
 
                 <div className="header-picture-wrap">

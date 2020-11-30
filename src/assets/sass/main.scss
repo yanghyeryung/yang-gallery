@@ -12,6 +12,13 @@
   .header-btn-wrap {
     padding: 20px 10px;
     text-align: right;
+    
+    input {
+      padding: 0 3px;
+      height: 20px;
+      vertical-align: text-bottom;
+      margin-right: 5px;
+    }
   }
 
   .header-picture-wrap {
