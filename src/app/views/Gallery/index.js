@@ -1,19 +1,18 @@
-import React, { useCallback, useState, useEffect } from 'react';
-import * as firebase from 'firebase';
+import React, { useCallback, useState, useEffect, useMemo } from 'react';
+import { database as firebaseDatabase, storage as firebaseStorage} from 'firebase';
 import $ from 'jquery';
 import moment from 'moment';
 import { v4 as uuid } from 'uuid';
 import { useAlert } from 'react-alert';
-import { useSelector } from 'react-redux'
+import Cookies from 'js-cookie';
+import { confirmAlert } from 'react-confirm-alert';
 
 import GalleryItem from './GalleryItem';
 
-const Gallery = (props) => {
-    const database = firebase.database();
-    const storage = firebase.storage().ref();
+const Gallery = () => {
+    const database = firebaseDatabase();
+    const storage = firebaseStorage();
     
-    const userState = useSelector((state) => state.user)
-
     const [items, setItems] = useState({});
     const [detail, setDetail] = useState({});
     const [editMode, setEditMode] = useState(false);
@@ -57,21 +56,37 @@ const Gallery = (props) => {
     }, [items]);
 
     const deleteFn = useCallback((e) => {
-        let key = e.currentTarget.getAttribute('data-key');
+        e.stopPropagation();
 
-        database.ref('gallery/' + key).remove()
-            .then(() => {
-                alert.show('삭제 성공', {
-                    type: 'success',
-                    timeout: 2000,
-                });
-            })
-            .catch(() => {
-                alert.show('삭제 실패', {
-                    type: 'error',
-                    timeout: 2000,
-                });
-            });
+        const key = e.currentTarget.getAttribute('data-key');
+
+        confirmAlert({
+            message: '삭제하시겠습니까?',
+            buttons: [
+              {
+                label: '확인',
+                onClick: () => {
+                    database.ref('gallery/' + key).remove()
+                    .then(() => {
+                        alert.show('삭제 성공', {
+                            type: 'success',
+                            timeout: 2000,
+                        });
+                    })
+                    .catch(() => {
+                        alert.show('삭제 실패', {
+                            type: 'error',
+                            timeout: 2000,
+                        });
+                    });
+                }
+              },
+              {
+                label: '취소',
+                onClick: () => { }
+              }
+            ]
+        });
     }, []);
 
     const saveFn = useCallback((e) => {
@@ -103,12 +118,7 @@ const Gallery = (props) => {
             let newDetailKey = uuid();
             newDetail.key = newDetailKey;
             
-            let newItems = {
-                [newDetailKey]: newDetail,
-                ...items
-            }
-
-            database.ref('gallery').set(newItems)
+            database.ref('gallery/' + newDetailKey).set(newDetail)
                 .then(() => {
                     alert.show('추가 성공', {
                         type: 'success',
@@ -154,7 +164,7 @@ const Gallery = (props) => {
         const selectedFile = e.target.files[0];
         const fileName = selectedFile.name;
 
-        storage.child(`images/${fileName}`).put(selectedFile)
+        storage.ref().child(`images/${fileName}`).put(selectedFile)
             .then((snapshot) => {
                 alert.show('이미지 추가 성공', {
                     type: 'success',
@@ -178,29 +188,31 @@ const Gallery = (props) => {
 
 
     // render 
-    let itemHtmlList = {
-        0: [],
-        1: [],
-        2: [],
-        3: [],
-    };
-
-    let itemKey = 0;
-    
-    for (let key in items) {
-        if (items.hasOwnProperty(key)) {
-            let item = items[key];
-
-            itemHtmlList[itemKey].push(<GalleryItem key={key} item={item} editFn={editFn} deleteFn={deleteFn} detailFn={detailFn}/>);
-            itemKey ++;
-            (itemKey === 4) && (itemKey = 0);
+    let itemHtmlList = useMemo(() => {
+        let itemHtmlList = {
+            0: [],
+            1: [],
+            2: [],
+            3: [],
         }
-    }
+        let itemKey = 0;
+
+        for (let key in items) {
+            if (items.hasOwnProperty(key)) {
+                let item = items[key];
     
+                itemHtmlList[itemKey].push(<GalleryItem key={key} item={item} editFn={editFn} deleteFn={deleteFn} detailFn={detailFn}/>);
+                itemKey ++;
+                (itemKey === 4) && (itemKey = 0);
+            }
+        }
+
+        return itemHtmlList;
+    }, [items]);
 
     return (
         <div className="gallery-wrap">
-            { userState.id === 'admin' && !editMode && <button className="btn" onClick={addFn}>+</button>}
+            { Cookies.get('authToken') === 'admin' && !editMode && <button className="btn" onClick={addFn}>+</button>}
             {
                 editMode ?
                     <form>

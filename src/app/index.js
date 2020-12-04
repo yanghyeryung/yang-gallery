@@ -1,18 +1,16 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import * as firebase from 'firebase';
+import { initializeApp } from 'firebase';
 import { HashRouter as Router, Route, Switch } from 'react-router-dom';
 import { transitions, positions, Provider as AlertProvider } from 'react-alert';
 import AlertTemplate from 'react-alert-template-basic';
-import { Provider } from 'react-redux';
-
-import store from 'store'
 
 import Login from 'views/Login';
+import Join from 'views/Join';
 import Main from 'views/Main';
 
 // firebase setting
-let firebaseConfig = {
+initializeApp({
     apiKey: "AIzaSyANJcTL5OSYVkWhJ2x1on4w242qq_AcqRY",
     authDomain: "yang-gallery.firebaseapp.com",
     databaseURL: "https://yang-gallery.firebaseio.com",
@@ -20,8 +18,7 @@ let firebaseConfig = {
     storageBucket: "yang-gallery.appspot.com",
     messagingSenderId: "1054961998752",
     appId: "1:1054961998752:web:754a332c24ff3c244f22c5"
-};
-firebase.initializeApp(firebaseConfig);
+});
 
 const alertOptions = {
     position: positions.BOTTOM_CENTER,
@@ -32,16 +29,15 @@ const alertOptions = {
 
 const App = () => {
     return (
-      <Provider store={store}>
       <AlertProvider template={AlertTemplate} {...alertOptions}>
         <Router>
             <Switch>
                   <Route exact path='/login' component={Login}/>
+                  <Route exact path='/join' component={Join}/>
                   <Route path='/' component={Main}/>
             </Switch>
         </Router>
         </AlertProvider>
-        </Provider>
     );
 }
   

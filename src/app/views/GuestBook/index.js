@@ -1,17 +1,22 @@
-import React, { useCallback, useState, useEffect } from 'react';
-import * as firebase from 'firebase';
+import React, { useCallback, useState, useEffect, useMemo } from 'react';
+import { database as firebaseDatabase} from 'firebase';
 import moment from 'moment';
 import { v4 as uuid } from 'uuid';
 import { useAlert } from 'react-alert';
+import Cookies from 'js-cookie';
+import { confirmAlert } from 'react-confirm-alert';
 
 import GuestBookItem from './GuestBookItem';
 
-const GuestBook = (props) => {
-    const database = firebase.database();
+const GuestBook = () => {
+    const database = firebaseDatabase();
+
+    const authToken = useMemo(() => Cookies.get('authToken'), [])
 
     const [items, setItems] = useState({});
-    const [detail, setDetail] = useState({});
-    const [editMode, setEditMode] = useState(false);
+    const [detail, setDetail] = useState({
+        name: authToken,
+    });
 
     const alert = useAlert()
 
@@ -36,35 +41,37 @@ const GuestBook = (props) => {
         };
     }, []);
 
-    const addFn = useCallback(() => {
-        setEditMode(true);
-        setDetail({});
-    }, []);
-
-    const editFn = useCallback((e) => {
-        let key = e.currentTarget.getAttribute('data-key');
-
-        setEditMode(true);
-        setDetail({
-            ...items[key],
-        });
-    }, [items]);
-
     const deleteFn = useCallback((e) => {
-        let key = e.currentTarget.getAttribute('data-key');
+        e.stopPropagation();
 
-        database.ref('guestbook/' + key).remove()
-        .then(() => {
-            alert.show('삭제 성공', {
-                type: 'success',
-                timeout: 2000,
-            });
-        })
-        .catch(() => {
-            alert.show('삭제 실패', {
-                type: 'error',
-                timeout: 2000,
-            });
+        const key = e.currentTarget.getAttribute('data-key');
+
+        confirmAlert({
+            message: '삭제하시겠습니까?',
+            buttons: [
+              {
+                label: '확인',
+                onClick: () => {
+                    database.ref('guestbook/' + key).remove()
+                    .then(() => {
+                        alert.show('삭제 성공', {
+                            type: 'success',
+                            timeout: 2000,
+                        });
+                    })
+                    .catch(() => {
+                        alert.show('삭제 실패', {
+                            type: 'error',
+                            timeout: 2000,
+                        });
+                    });
+                }
+              },
+              {
+                label: '취소',
+                onClick: () => { }
+              }
+            ]
         });
     }, []);
 
@@ -76,48 +83,26 @@ const GuestBook = (props) => {
             ... detail
         }
 
-        if (newDetail.key) {
-            // 수정
-            database.ref('guestbook/' + newDetail.key).set(newDetail)
-                .then(() => {
-                    alert.show('수정 성공', {
-                        type: 'success',
-                        timeout: 2000,
-                    });
-                    setEditMode(false);
-                })
-                .catch(() => {
-                    alert.show('수정 실패', {
-                        type: 'error',
-                        timeout: 2000,
-                    });
-                });
-        } else {
-            // 추가
-            let newDetailKey = uuid();
-            newDetail.key = newDetailKey;
+        // 추가
+        let newDetailKey = uuid();
+        newDetail.key = newDetailKey;
 
-            let newItems = {
-                [newDetailKey]: newDetail,
-                ...items
-            }
-
-            database.ref('guestbook').set(newItems)
-                .then(() => {
-                    alert.show('추가 성공', {
-                        type: 'success',
-                        timeout: 2000,
-                    });
-                    setEditMode(false);
-                    setDetail({})
-                })
-                .catch(() => {
-                    alert.show('추가 실패', {
-                        type: 'error',
-                        timeout: 2000,
-                    });
+        database.ref('guestbook/' + newDetailKey).set(newDetail)
+            .then(() => {
+                alert.show('추가 성공', {
+                    type: 'success',
+                    timeout: 2000,
                 });
-        }
+                setDetail({
+                    name: authToken,
+                })
+            })
+            .catch(() => {
+                alert.show('추가 실패', {
+                    type: 'error',
+                    timeout: 2000,
+                });
+            });
     }, [detail, items]);
 
     const changeDetailFn = useCallback((e) => {
@@ -128,14 +113,18 @@ const GuestBook = (props) => {
     }, [detail]);
 
     // render
-    let itemHtmlList = [];
+    let itemHtmlList = useMemo(() => {
+        let itemHtmlList = [];
 
-    for (let key in items) {
-        if (items.hasOwnProperty(key)) {
-            let item = items[key];
-            itemHtmlList.push(<GuestBookItem key={key} item={item} editFn={editFn} deleteFn={deleteFn}/>);
+        for (let key in items) {
+            if (items.hasOwnProperty(key)) {
+                let item = items[key];
+                itemHtmlList.push(<GuestBookItem key={key} item={item} deleteFn={deleteFn}/>);
+            }
         }
-    }
+
+        return itemHtmlList;
+    }, [items]);
 
     return (
         <div className="guest-book-wrap">
@@ -143,7 +132,7 @@ const GuestBook = (props) => {
                 <div className="input-wrap">
                     <div className="form-item">
                         <label>이름</label>
-                        <input name="name" value={detail.name ? detail.name : ''} onChange={changeDetailFn}/>
+                        <input name="name" value={detail.name ? detail.name : ''} onChange={changeDetailFn} disabled={authToken}/>
                     </div>
                     <div className="form-item">
                         <label>내용</label>

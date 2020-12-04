@@ -4,13 +4,16 @@
   top: 50%;
   left: 50%;
   width: 350px;
-  height: 330px;
   background: $base-bg-color;
   border: 1px solid $base-bd-color;
   border-radius: 4px;
   margin-left: -175px;
-  margin-top: -165px;
+  margin-top: -180px;
   padding: 40px;
+
+  &.join-wrap {
+    margin-top: -235px;
+  }
 
   * {
     width: 100%;
@@ -45,5 +48,14 @@
   button {
     padding: 15px;
     margin-top: 20px;
+    font-size: 14px;
+  }
+
+  a {
+    color: #aaa;
+    text-align: end;
+    margin-top: 16px;
+    cursor: pointer;
+    font-weight: bold;
   }
 }
