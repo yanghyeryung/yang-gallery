@@ -110,3 +110,31 @@
     display: none;
   }
 }
+
+@media screen and (max-width: 320px) {
+  .gallery-wrap {
+    .list-wrap {
+      > div {
+        width: 100% !important;
+      }
+
+      div.detail-wrap {
+        width: 100% !important;
+      }
+    }
+  }
+}
+
+@media screen and (min-width: 321px) and (max-width: 900px) {
+  .gallery-wrap {
+    .list-wrap {
+      > div {
+        width: 50% !important;
+      }
+
+      div.detail-wrap {
+        width: 100% !important;
+      }
+    }
+  }
+}
