@@ -55,10 +55,15 @@ module.exports = (env, argv) => {
         patterns: [
           { from: "src/assets/fonts/noto", to: "fonts" },
           { from: "src/assets/images", to: "images" },
+
+          { from: "manifest.json", to: "manifest.json" },
+          { from: "next-steps.html", to: "next-steps.html" },
+          { from: "offline.html", to: "offline.html" },
+          { from: "pwabuilder-sw.js", to: "pwabuilder-sw.js" },
         ],
       }),
       new HtmlWebpackPlugin({
-        template: "./src/index.html",
+        template: "./index.html",
         templateParameters: {
           title: "Yang Gallery",
         },

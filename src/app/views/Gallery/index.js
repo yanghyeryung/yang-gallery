@@ -212,23 +212,33 @@ const Gallery = () => {
 
     return (
         <div className="gallery-wrap">
-            { Cookies.get('authToken') === 'admin' && !editMode && <button className="btn" onClick={addFn}>+</button>}
+            { 
+                Cookies.get('authToken') === 'admin' &&
+                !editMode && 
+                <div className="add-btn-wrap">
+                    <button onClick={addFn}>추가</button>
+                </div>
+             }
             {
                 editMode ?
-                    <form>
+                    <form className='form-wrap'>
                         <div className="form-item">
-                            <label>title</label>
+                            <label>이름</label>
                             <input name="title" value={detail.title} onChange={changeDetailFn}/>
                         </div>
                         <div className="form-item">
-                            <label>image</label>
+                            <label>이미지</label>
                             <input type="file" accept="image/*" name="image" onChange={uploadImageFn} />
-                            <button onClick={openUploadImagePopupFn}>upload</button>
+                            <button onClick={openUploadImagePopupFn}>업로드</button>
+                        </div>
+                        <div className='form-center-item'>
                             {
-                                detail.image && <img src={detail.image} width="300"></img>
+                                detail.image && <img src={detail.image} width="200"></img>
                             }
                         </div>
-                        <button onClick={saveFn}>save</button>
+                        <div className='form-center-item'>
+                            <button onClick={saveFn}>저장</button>
+                        </div>
                     </form>
                     :
                     <div className="list-wrap">
