@@ -17,6 +17,7 @@ const Gallery = () => {
     const [detail, setDetail] = useState({});
     const [editMode, setEditMode] = useState(false);
     const [detailMode, setDetailMode] = useState(false);
+    const [isLoading, setLoading] = useState(false);
 
     const alert = useAlert()
 
@@ -135,6 +136,10 @@ const Gallery = () => {
         }
     }, [detail, items]);
 
+    const cancelFn = useCallback((e) => {
+        setEditMode(false);
+    }, [])
+
     const detailFn = useCallback((e) => {
         let key = e.currentTarget.getAttribute('data-key');
 
@@ -164,6 +169,12 @@ const Gallery = () => {
         const selectedFile = e.target.files[0];
         const fileName = selectedFile.name;
 
+        setLoading(true)
+        setDetail({
+            ...detail,
+            image: null,
+        });
+
         storage.ref().child(`images/${fileName}`).put(selectedFile)
             .then((snapshot) => {
                 alert.show('이미지 추가 성공', {
@@ -172,6 +183,7 @@ const Gallery = () => {
                 });
 
                 snapshot.ref.getDownloadURL().then((downloadURL) => {
+                    setLoading(false)
                     setDetail({
                         ...detail,
                         image: downloadURL
@@ -235,17 +247,21 @@ const Gallery = () => {
                             {
                                 detail.image && <img src={detail.image} width="200"></img>
                             }
+                            {
+                                isLoading && <div className='loading-wrap'>Loading...</div>
+                            }
                         </div>
-                        <div className='form-center-item'>
+                        <div className='form-btn-wrap form-center-item'>
                             <button onClick={saveFn}>저장</button>
+                            <button onClick={cancelFn}>취소</button>
                         </div>
                     </form>
                     :
                     <div className="list-wrap">
-                        <div>{itemHtmlList[0]}</div>
-                        <div>{itemHtmlList[1]}</div>
-                        <div>{itemHtmlList[2]}</div>
-                        <div>{itemHtmlList[3]}</div>
+                        <div className='list-item'>{itemHtmlList[0]}</div>
+                        <div className='list-item'>{itemHtmlList[1]}</div>
+                        <div className='list-item'>{itemHtmlList[2]}</div>
+                        <div className='list-item'>{itemHtmlList[3]}</div>
                         {
                             detailMode && <div className="detail-wrap" onClick={closeDetailFn}>
                                 <div className="detail-conts">

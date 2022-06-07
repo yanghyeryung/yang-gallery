@@ -19,6 +19,16 @@
         padding: 5px 10px;
         margin-bottom: 20px;
       }
+
+      label {
+        display: inline-block;
+        width: 20%;
+        color: #fff;
+      }
+  
+      input {
+        width: 80%;
+      }
     }
 
     .form-center-item {
@@ -32,21 +42,23 @@
     img {
       margin-bottom: 20px;
     }
-    
-    label {
-      display: inline-block;
-      width: 20%;
+
+    .loading-wrap {
+      padding: 50px 0 70px 0;
       color: #fff;
+      font-size: 13px;
     }
 
-    input {
-      width: 80%;
+    .form-btn-wrap {
+      button {
+        margin: 0 5px;
+      }
     }
   }
   .list-wrap {
     padding-left: 20px;
 
-    > div {
+    > .list-item {
       display: inline-block;
       width: 25%;
       text-align: center;
@@ -114,11 +126,7 @@
 @media screen and (max-width: 320px) {
   .gallery-wrap {
     .list-wrap {
-      > div {
-        width: 100% !important;
-      }
-
-      div.detail-wrap {
+      > .list-item {
         width: 100% !important;
       }
     }
@@ -128,12 +136,8 @@
 @media screen and (min-width: 321px) and (max-width: 900px) {
   .gallery-wrap {
     .list-wrap {
-      > div {
+      > .list-item {
         width: 50% !important;
-      }
-
-      div.detail-wrap {
-        width: 100% !important;
       }
     }
   }

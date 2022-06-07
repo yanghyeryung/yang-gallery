@@ -26,6 +26,16 @@ const Main = () => {
         setActiveTabMode(mode);
     }, []);
 
+    const showDecoration = useCallback((e) => {
+        const target = e.currentTarget
+
+        target.classList.add('clicked')
+
+        setTimeout(() => {
+            target.classList.remove('clicked')
+        }, 2000)
+    }, []);
+
     return (
         <div className="main-wrap">
             <div className="header">
@@ -42,7 +52,7 @@ const Main = () => {
                 }
                 </div>
 
-                <div className="header-picture-wrap">
+                <div className="header-picture-wrap" onClick={showDecoration}>
                     <div className="heart"></div>
                     <div className="cheek left"></div>
                     <div className="cheek right"></div>

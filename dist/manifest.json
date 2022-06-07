@@ -5,7 +5,7 @@
   "short_name": "Yang Gallery",
   "scope": "/#/",
   "display": "standalone",
-  "start_url": "https://6e4e-211-221-128-146.jp.ngrok.io//",
+  "start_url": "https://6e4e-211-221-128-146.jp.ngrok.io/",
   "background_color": "transparent",
   "theme_color": "transparent",
   "orientation": "any",

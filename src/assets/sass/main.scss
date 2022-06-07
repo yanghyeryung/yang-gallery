@@ -92,7 +92,7 @@
       }
     }
 
-    &:hover {
+    &.clicked {
       .heart {
         display: block;
       }
